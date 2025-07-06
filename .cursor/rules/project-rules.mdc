@@ -1,0 +1,431 @@
+---
+alwaysApply: true
+---
+# Oratriq - Project Rules and Best Practices
+
+## Directory Structure Rules
+
+### Core Principles
+1. **Separation of Concerns**: Each module has a single responsibility
+2. **Minimal Complexity**: Keep the structure simple for MVP functionality
+3. **Scalability**: Structure should support future enhancements
+4. **Testability**: Easy to write and run tests for each component
+
+### Directory Organization
+
+#### `/config/`
+- **Purpose**: Application configuration and settings
+- **Rules**:
+  - Single `settings.py` file for all configuration
+  - Use environment variables for sensitive data
+  - Implement configuration validation with Pydantic
+  - Keep configuration centralized and easily accessible
+
+#### `/src/`
+- **Purpose**: Main application source code
+- **Rules**:
+  - Each subdirectory represents a distinct domain
+  - Use `__init__.py` files for clean imports
+  - Keep modules focused and cohesive
+  - Follow the principle of least coupling
+
+##### `/src/audio/`
+- **Purpose**: Audio recording and processing
+- **Rules**:
+  - Handle microphone input and audio file operations
+  - Implement proper error handling for audio devices
+  - Support multiple audio formats (WAV, MP3)
+  - Provide audio quality and format validation
+
+##### `/src/speech/`
+- **Purpose**: Speech-to-text and speech analysis
+- **Rules**:
+  - Separate STT conversion from analysis
+  - Support multiple STT providers (local and cloud)
+  - Implement speech pattern detection
+  - Handle different languages and accents
+
+##### `/src/ai/`
+- **Purpose**: AI recommendation engine and models
+- **Rules**:
+  - Keep AI logic separate from business logic
+  - Support multiple AI providers (OpenAI, local models)
+  - Implement caching for API responses
+  - Provide fallback mechanisms for AI failures
+
+##### `/src/utils/`
+- **Purpose**: Shared utilities and helper functions
+- **Rules**:
+  - No business logic in utils
+  - Pure functions only
+  - Comprehensive logging setup
+  - Reusable across all modules
+
+#### `/tests/`
+- **Purpose**: Unit and integration tests
+- **Rules**:
+  - Mirror the source directory structure
+  - Test each module independently
+  - Use fixtures for common test data
+  - Mock external dependencies
+
+#### `/data/`
+- **Purpose**: Application data storage
+- **Rules**:
+  - Separate user data from application code
+  - Implement proper data organization
+  - Use appropriate file formats for different data types
+  - Include data validation and cleanup
+
+## Coding Standards
+
+### Python Code Style
+1. **PEP 8 Compliance**: Follow all PEP 8 guidelines strictly
+2. **Type Hints**: Use type hints for all function parameters and return values
+3. **Docstrings**: Use Google docstring format for all public functions
+4. **Line Length**: Maximum 88 characters (Black formatter standard)
+5. **Imports**: 
+   - **Use absolute imports only**: Never use relative imports (e.g., `from .module import` or `from ..module import`)
+   - Always use full package paths (e.g., `from src.utils.logger import setup_logger`)
+   - Organize imports in the following order:
+     - Standard library imports
+     - Third-party imports
+     - Local application imports
+   - Separate each group with a blank line
+
+### Naming Conventions
+1. **Files**: Use snake_case for file names
+2. **Classes**: Use PascalCase for class names
+3. **Functions/Variables**: Use snake_case for functions and variables
+4. **Constants**: Use UPPER_SNAKE_CASE for constants
+5. **Private Methods**: Prefix with underscore for private methods
+
+### Error Handling
+1. **Custom Exceptions**: Create domain-specific exception classes
+2. **Graceful Degradation**: Handle failures without crashing
+3. **User Feedback**: Provide clear error messages to users
+4. **Logging**: Log all errors with appropriate levels
+5. **Recovery**: Implement retry mechanisms where appropriate
+
+### Testing Requirements
+1. **Coverage**: Maintain minimum 80% code coverage
+2. **Unit Tests**: Test each function independently
+3. **Integration Tests**: Test module interactions
+4. **Mocking**: Mock external dependencies and APIs
+5. **Fixtures**: Use pytest fixtures for common test data
+
+## Development Workflow
+
+### Git Workflow
+1. **Branch Naming**: Use descriptive branch names (feature/, bugfix/, hotfix/)
+2. **Commit Messages**: Use conventional commit format
+3. **Pull Requests**: Require code review before merging
+4. **Squash Merges**: Use squash merges for feature branches
+
+### Code Review Checklist
+- [ ] Code follows PEP 8 style guidelines
+- [ ] Type hints are implemented
+- [ ] Docstrings are present and accurate
+- [ ] Tests are written and passing
+- [ ] Error handling is comprehensive
+- [ ] No hardcoded values or secrets
+- [ ] Logging is implemented appropriately
+- [ ] Performance considerations are addressed
+
+### Documentation Standards
+1. **README**: Keep updated with current features and setup instructions
+2. **Code Comments**: Use comments sparingly, prefer self-documenting code
+3. **API Documentation**: Document all public APIs
+4. **Configuration**: Document all configuration options
+5. **Troubleshooting**: Include common issues and solutions
+
+## Security Guidelines
+
+### Data Protection
+1. **Environment Variables**: Store sensitive data in environment variables
+2. **API Keys**: Never commit API keys to version control
+3. **Audio Data**: Implement proper handling of recorded audio
+4. **User Privacy**: Respect user privacy and data protection laws
+5. **Input Validation**: Validate all user inputs
+
+### Dependencies
+1. **Version Pinning**: Pin dependency versions in requirements.txt
+2. **Security Updates**: Regularly update dependencies
+3. **Vulnerability Scanning**: Scan for known vulnerabilities
+4. **Minimal Dependencies**: Only include necessary dependencies
+
+## Performance Guidelines
+
+### Audio Processing
+1. **Streaming**: Use streaming for real-time audio processing
+2. **Memory Management**: Implement proper memory cleanup
+3. **Format Optimization**: Use appropriate audio formats for processing
+4. **Caching**: Cache processed results where appropriate
+
+### AI Integration
+1. **Rate Limiting**: Implement rate limiting for API calls
+2. **Caching**: Cache AI responses to reduce API usage
+3. **Fallbacks**: Provide fallback mechanisms for AI failures
+4. **Async Processing**: Use async/await for non-blocking operations
+
+## Deployment Guidelines
+
+### Environment Setup
+1. **Virtual Environments**: Use virtual environments for development
+2. **Dependency Management**: Use requirements.txt for dependency management
+3. **Configuration**: Use environment-specific configuration files
+4. **Logging**: Configure appropriate logging levels for different environments
+
+### Production Considerations
+1. **Error Monitoring**: Implement error monitoring and alerting
+2. **Performance Monitoring**: Monitor application performance
+3. **Backup Strategy**: Implement data backup strategies
+4. **Scaling**: Design for horizontal scaling
+
+## Quality Assurance
+
+### Code Quality Tools
+1. **Linting**: Use flake8 for code linting
+2. **Formatting**: Use Black for code formatting
+3. **Type Checking**: Use mypy for static type checking
+4. **Security**: Use bandit for security scanning
+
+### Continuous Integration
+1. **Automated Testing**: Run tests on every commit
+2. **Code Quality**: Run linting and formatting checks
+3. **Security Scanning**: Scan for vulnerabilities
+4. **Documentation**: Generate and update documentation
+
+## MVP Development Rules
+
+### Phase 1 Priorities
+1. **Core Functionality**: Focus on basic audio recording and STT
+2. **Simple Interface**: Command-line interface only
+3. **Basic Analysis**: Simple presentation analysis
+4. **Error Handling**: Robust error handling for core features
+
+### MVP Constraints
+1. **Single Platform**: Focus on macOS initially
+2. **Basic STT**: Use simple, reliable STT service
+3. **Local Processing**: Minimize external dependencies
+4. **Simple Output**: Text-based recommendations only
+
+### MVP Success Criteria
+1. **Audio Recording**: Successfully record from microphone
+2. **STT Conversion**: Convert speech to text accurately
+3. **Basic Analysis**: Provide simple presentation feedback
+4. **User Experience**: Clear, helpful command-line interface 
+# Oratriq - Project Rules and Best Practices
+
+## Directory Structure Rules
+
+### Core Principles
+1. **Separation of Concerns**: Each module has a single responsibility
+2. **Minimal Complexity**: Keep the structure simple for MVP functionality
+3. **Scalability**: Structure should support future enhancements
+4. **Testability**: Easy to write and run tests for each component
+
+### Directory Organization
+
+#### `/config/`
+- **Purpose**: Application configuration and settings
+- **Rules**:
+  - Single `settings.py` file for all configuration
+  - Use environment variables for sensitive data
+  - Implement configuration validation with Pydantic
+  - Keep configuration centralized and easily accessible
+
+#### `/src/`
+- **Purpose**: Main application source code
+- **Rules**:
+  - Each subdirectory represents a distinct domain
+  - Use `__init__.py` files for clean imports
+  - Keep modules focused and cohesive
+  - Follow the principle of least coupling
+
+##### `/src/audio/`
+- **Purpose**: Audio recording and processing
+- **Rules**:
+  - Handle microphone input and audio file operations
+  - Implement proper error handling for audio devices
+  - Support multiple audio formats (WAV, MP3)
+  - Provide audio quality and format validation
+
+##### `/src/speech/`
+- **Purpose**: Speech-to-text and speech analysis
+- **Rules**:
+  - Separate STT conversion from analysis
+  - Support multiple STT providers (local and cloud)
+  - Implement speech pattern detection
+  - Handle different languages and accents
+
+##### `/src/ai/`
+- **Purpose**: AI recommendation engine and models
+- **Rules**:
+  - Keep AI logic separate from business logic
+  - Support multiple AI providers (OpenAI, local models)
+  - Implement caching for API responses
+  - Provide fallback mechanisms for AI failures
+
+##### `/src/utils/`
+- **Purpose**: Shared utilities and helper functions
+- **Rules**:
+  - No business logic in utils
+  - Pure functions only
+  - Comprehensive logging setup
+  - Reusable across all modules
+
+#### `/tests/`
+- **Purpose**: Unit and integration tests
+- **Rules**:
+  - Mirror the source directory structure
+  - Test each module independently
+  - Use fixtures for common test data
+  - Mock external dependencies
+
+#### `/data/`
+- **Purpose**: Application data storage
+- **Rules**:
+  - Separate user data from application code
+  - Implement proper data organization
+  - Use appropriate file formats for different data types
+  - Include data validation and cleanup
+
+## Coding Standards
+
+### Python Code Style
+1. **PEP 8 Compliance**: Follow all PEP 8 guidelines strictly
+2. **Type Hints**: Use type hints for all function parameters and return values
+3. **Docstrings**: Use Google docstring format for all public functions
+4. **Line Length**: Maximum 88 characters (Black formatter standard)
+5. **Imports**: 
+   - **Use absolute imports only**: Never use relative imports (e.g., `from .module import` or `from ..module import`)
+   - Always use full package paths (e.g., `from src.utils.logger import setup_logger`)
+   - Organize imports in the following order:
+     - Standard library imports
+     - Third-party imports
+     - Local application imports
+   - Separate each group with a blank line
+
+### Naming Conventions
+1. **Files**: Use snake_case for file names
+2. **Classes**: Use PascalCase for class names
+3. **Functions/Variables**: Use snake_case for functions and variables
+4. **Constants**: Use UPPER_SNAKE_CASE for constants
+5. **Private Methods**: Prefix with underscore for private methods
+
+### Error Handling
+1. **Custom Exceptions**: Create domain-specific exception classes
+2. **Graceful Degradation**: Handle failures without crashing
+3. **User Feedback**: Provide clear error messages to users
+4. **Logging**: Log all errors with appropriate levels
+5. **Recovery**: Implement retry mechanisms where appropriate
+
+### Testing Requirements
+1. **Coverage**: Maintain minimum 80% code coverage
+2. **Unit Tests**: Test each function independently
+3. **Integration Tests**: Test module interactions
+4. **Mocking**: Mock external dependencies and APIs
+5. **Fixtures**: Use pytest fixtures for common test data
+
+## Development Workflow
+
+### Git Workflow
+1. **Branch Naming**: Use descriptive branch names (feature/, bugfix/, hotfix/)
+2. **Commit Messages**: Use conventional commit format
+3. **Pull Requests**: Require code review before merging
+4. **Squash Merges**: Use squash merges for feature branches
+
+### Code Review Checklist
+- [ ] Code follows PEP 8 style guidelines
+- [ ] Type hints are implemented
+- [ ] Docstrings are present and accurate
+- [ ] Tests are written and passing
+- [ ] Error handling is comprehensive
+- [ ] No hardcoded values or secrets
+- [ ] Logging is implemented appropriately
+- [ ] Performance considerations are addressed
+
+### Documentation Standards
+1. **README**: Keep updated with current features and setup instructions
+2. **Code Comments**: Use comments sparingly, prefer self-documenting code
+3. **API Documentation**: Document all public APIs
+4. **Configuration**: Document all configuration options
+5. **Troubleshooting**: Include common issues and solutions
+
+## Security Guidelines
+
+### Data Protection
+1. **Environment Variables**: Store sensitive data in environment variables
+2. **API Keys**: Never commit API keys to version control
+3. **Audio Data**: Implement proper handling of recorded audio
+4. **User Privacy**: Respect user privacy and data protection laws
+5. **Input Validation**: Validate all user inputs
+
+### Dependencies
+1. **Version Pinning**: Pin dependency versions in requirements.txt
+2. **Security Updates**: Regularly update dependencies
+3. **Vulnerability Scanning**: Scan for known vulnerabilities
+4. **Minimal Dependencies**: Only include necessary dependencies
+
+## Performance Guidelines
+
+### Audio Processing
+1. **Streaming**: Use streaming for real-time audio processing
+2. **Memory Management**: Implement proper memory cleanup
+3. **Format Optimization**: Use appropriate audio formats for processing
+4. **Caching**: Cache processed results where appropriate
+
+### AI Integration
+1. **Rate Limiting**: Implement rate limiting for API calls
+2. **Caching**: Cache AI responses to reduce API usage
+3. **Fallbacks**: Provide fallback mechanisms for AI failures
+4. **Async Processing**: Use async/await for non-blocking operations
+
+## Deployment Guidelines
+
+### Environment Setup
+1. **Virtual Environments**: Use virtual environments for development
+2. **Dependency Management**: Use requirements.txt for dependency management
+3. **Configuration**: Use environment-specific configuration files
+4. **Logging**: Configure appropriate logging levels for different environments
+
+### Production Considerations
+1. **Error Monitoring**: Implement error monitoring and alerting
+2. **Performance Monitoring**: Monitor application performance
+3. **Backup Strategy**: Implement data backup strategies
+4. **Scaling**: Design for horizontal scaling
+
+## Quality Assurance
+
+### Code Quality Tools
+1. **Linting**: Use flake8 for code linting
+2. **Formatting**: Use Black for code formatting
+3. **Type Checking**: Use mypy for static type checking
+4. **Security**: Use bandit for security scanning
+
+### Continuous Integration
+1. **Automated Testing**: Run tests on every commit
+2. **Code Quality**: Run linting and formatting checks
+3. **Security Scanning**: Scan for vulnerabilities
+4. **Documentation**: Generate and update documentation
+
+## MVP Development Rules
+
+### Phase 1 Priorities
+1. **Core Functionality**: Focus on basic audio recording and STT
+2. **Simple Interface**: Command-line interface only
+3. **Basic Analysis**: Simple presentation analysis
+4. **Error Handling**: Robust error handling for core features
+
+### MVP Constraints
+1. **Single Platform**: Focus on macOS initially
+2. **Basic STT**: Use simple, reliable STT service
+3. **Local Processing**: Minimize external dependencies
+4. **Simple Output**: Text-based recommendations only
+
+### MVP Success Criteria
+1. **Audio Recording**: Successfully record from microphone
+2. **STT Conversion**: Convert speech to text accurately
+3. **Basic Analysis**: Provide simple presentation feedback
+4. **User Experience**: Clear, helpful command-line interface 
