@@ -18,6 +18,9 @@ oratriq/
 ├── requirements.txt          # Python dependencies
 ├── .gitignore               # Git ignore patterns
 ├── .env.example             # Environment variables template
+├── .cursor/                 # Cursor IDE configuration
+│   └── rules/
+│       └── project-rules.mdc # Project coding standards and guidelines
 ├── config/
 │   ├── __init__.py
 │   └── settings.py          # Application configuration
