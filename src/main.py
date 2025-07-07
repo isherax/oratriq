@@ -1,11 +1,15 @@
 """Main CLI entry point for Oratriq application."""
 
 import click
+from pathlib import Path
 from rich.console import Console
 from rich.panel import Panel
 from rich.text import Text
+import time
 
 from config.settings import settings
+from src.audio.recorder import AudioRecorder
+from src.speech.stt import SpeechToText
 from src.utils.logger import setup_logger
 
 # Initialize console and logger
@@ -50,14 +54,107 @@ def start(duration: int, output: str) -> None:
     ))
     
     try:
-        # TODO: Implement audio recording functionality
-        console.print("[green]✓ Recording session started[/green]")
-        console.print("[yellow]⚠ Audio recording not yet implemented[/yellow]")
+        # Initialize audio recorder
+        recorder = AudioRecorder(
+            sample_rate=settings.audio_sample_rate,
+            channels=settings.audio_channels,
+            chunk_size=settings.audio_chunk_size
+        )
+        
+        # Generate output filename if not provided
+        if not output:
+            timestamp = int(time.time())
+            output = settings.recordings_dir / f"recording_{timestamp}.wav"
+        
+        # Record audio
+        console.print("[green]✓ Recording started...[/green]")
+        audio_data = recorder.record_for_duration(duration)
+        
+        # Save audio file
+        recorder.save_audio(audio_data, str(output))
+        console.print(f"[green]✓ Recording saved to: {output}[/green]")
+        
+        # Cleanup
+        recorder.cleanup()
         
     except KeyboardInterrupt:
         console.print("\n[yellow]Recording stopped by user[/yellow]")
     except Exception as e:
         logger.error(f"Error during recording: {e}")
+        console.print(f"[red]Error: {e}[/red]")
+
+
+@cli.command()
+@click.option(
+    "--duration",
+    "-d",
+    default=10,
+    help="Recording duration in seconds (default: 10)"
+)
+@click.option(
+    "--language",
+    "-l",
+    default="en-US",
+    help="Language code for speech recognition (default: en-US)"
+)
+@click.option(
+    "--save-audio",
+    "-s",
+    is_flag=True,
+    help="Save the audio recording to file"
+)
+def stt(duration: int, language: str, save_audio: bool) -> None:
+    """Convert speech from microphone to text."""
+    console.print(Panel.fit(
+        "[bold green]🎤 Speech-to-Text Conversion[/bold green]\n"
+        f"Duration: {duration} seconds\n"
+        f"Language: {language}\n"
+        "Press Ctrl+C to stop recording early",
+        border_style="green"
+    ))
+    
+    try:
+        # Initialize audio recorder
+        recorder = AudioRecorder(
+            sample_rate=settings.audio_sample_rate,
+            channels=settings.audio_channels,
+            chunk_size=settings.audio_chunk_size
+        )
+        
+        # Initialize speech-to-text converter
+        stt_converter = SpeechToText()
+        
+        # Record audio
+        console.print("[green]✓ Recording started...[/green]")
+        console.print("[yellow]Speak now...[/yellow]")
+        
+        audio_data = recorder.record_for_duration(duration)
+        
+        # Save audio if requested
+        if save_audio:
+            timestamp = int(time.time())
+            audio_file = settings.recordings_dir / f"stt_recording_{timestamp}.wav"
+            recorder.save_audio(audio_data, str(audio_file))
+            console.print(f"[green]✓ Audio saved to: {audio_file}[/green]")
+        
+        # Convert speech to text
+        console.print("[green]✓ Converting speech to text...[/green]")
+        text = stt_converter.convert_audio_data(audio_data, language)
+        
+        # Display results
+        console.print()
+        console.print(Panel.fit(
+            f"[bold cyan]Transcription Result:[/bold cyan]\n\n{text}",
+            border_style="cyan"
+        ))
+        
+        # Cleanup
+        recorder.cleanup()
+        
+    except KeyboardInterrupt:
+        console.print("\n[yellow]Recording stopped by user[/yellow]")
+    except Exception as e:
+        logger.error(f"Error during speech-to-text conversion: {e}")
         console.print(f"[red]Error: {e}[/red]")
 
 
